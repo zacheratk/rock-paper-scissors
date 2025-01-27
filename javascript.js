@@ -58,18 +58,12 @@ function getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min) + min);
 }
 
-function getHumanChoice() {
-    // Prompt human to write what option they choose
-    choice = prompt("Rock... paper... scissors... (enter your choice)").toLowerCase().trim();
+// Collect human choice with button
+const buttons = document.querySelectorAll("button");
 
-    // Check if the response is valid:
-    if (choice == "rock" || choice == "paper" || choice == "scissors") {
-        return choice;
-    } else {
-        alert("Invalid input.");
-        getHumanChoice();
-    }
-}
+buttons.forEach((button) => {
+    button.addEventListener("click", () => playRound(button.id))
+})
 
 function evaluateChoice(humanChoice, computerChoice) {
     // Use map to determine winner of the two choices
@@ -81,52 +75,101 @@ function evaluateChoice(humanChoice, computerChoice) {
     return result;
 }
 
+// Update title
+function updateTitle(result) {
+    const title = document.querySelector("#title");
+    switch (result) {
+        case "win":
+            title.textContent = "You won!";
+            title.style.color = "#9CEC5B"
+            break;
+        case "loss":
+            title.textContent = "You lost..."
+            title.style.color = "#CC3F0C"
+            break;
+        case "tie":
+            title.textContent = "You tied."
+            title.style.color = "#F4E04D"
+            break;
+        default:
+            throw new Error(`updateTitle was provided an unknown value. (${result})`);
+    }
+}
+
+// Change human icon to their selection
+function updateHumanIcon(choice) {
+    const humanIcon = document.querySelector("#human-choice");
+
+    switch (choice) {
+        case "rock":
+            humanIcon.textContent = "🪨";
+            break;
+        case "paper":
+            humanIcon.textContent = "📄";
+            break;
+        case "scissors":
+            humanIcon.textContent = "✂️";
+            break;
+        default:
+            throw new Error(`updateHumanChoice was provided an unknown value. (${choice})`);
+    }
+}
+
+// Update score on page
+function updateScore() {
+    const humanScoreCount = document.querySelector("#human-score");
+    const computerScoreCount = document.querySelector("#computer-score")
+
+    humanScoreCount.textContent = `Your Score: ${humanScore}`;
+    computerScoreCount.textContent = `Computer Score: ${computerScore}`;
+    
+}
+
+// Change computer icon to their selection
+function updateComputerIcon(choice) {
+    const computerIcon = document.querySelector("#computer-choice");
+
+    switch (choice) {
+        case "rock":
+            computerIcon.textContent = "🪨";
+            break;
+        case "paper":
+            computerIcon.textContent = "📄";
+            break;
+        case "scissors":
+            computerIcon.textContent = "✂️";
+            break;
+        default:
+            throw new Error(`updateComputerIcon was provided an unknown value. (${choice})`);
+    }
+}
+
 // Main game
-function playRound() {
-    // Call getHumanChoice and getComputerChoice, then evaluate the result
-    let humanChoice = getHumanChoice();
+function playRound(humanChoice) {
     let computerChoice = getComputerChoice();
 
     console.log("You picked: " + humanChoice);
     console.log("Your opponent picked: " + computerChoice);
+    updateHumanIcon(humanChoice);
+    updateComputerIcon(computerChoice);
 
     switch (evaluateChoice(humanChoice, computerChoice)) {
         case "win":
             console.log("You won!");
             humanScore++;
+            updateTitle("win");
             break;
         case "loss":
             console.log("You lost...");
             computerScore++;
+            updateTitle("loss")
             break;
         case "tie":
             console.log("You tied.");
+            updateTitle("tie")
             break;
         default:
             throw new Error("evaluateChoice returned unknown value");
     }
+    updateScore();
 }
-
-function playGame(rounds = 5) {
-    for (let i = 0; i < rounds; i++) {
-        console.log("Round " + (i+1) + ":");
-        playRound();
-    }
-
-    declareWinner();
-}
-
-function declareWinner() {
-    // Print score of both the computer and the human, and declare the winner
-    console.log("Your final score: " + humanScore);
-    console.log("Opponent final score: " + computerScore);
-    if (humanScore > computerScore) {
-        console.log("You won the game!");
-    } else if (computerScore > humanScore) {
-        console.log("You lost the game...");
-    } else {
-        console.log("You tied. Rematch?")
-    }
-}
-
-playGame();
